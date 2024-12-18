@@ -64,13 +64,22 @@ export function QuickActions() {
 
   const actions: QuickAction[] = [
     {
-      id: 'joke',
-      label: 'Tell Joke',
-      description: 'Hear a joke',
+      id: 'genz',
+      label: 'Gen Z Speak',
+      description: 'Speak like a Gen Z.',
       action: async () => {
-        await client.send([{ text: 'Tell me a joke' }]);
+        await client.send([{ text: 'Have a conversation with me while you speak like a Gen Z and use all the proper slang.' }]);
       },
       icon: '😂'
+    },
+    {
+      id: 'graph',
+      label: 'Draw Graph',
+      description: 'Draw a graph of context',
+      action: async () => {
+        await client.send([{ text: 'Create a graph for the context of my choosing.' }]);
+      },
+      icon: '📈'
     },
     {
       id: 'summarize',
@@ -86,7 +95,7 @@ export function QuickActions() {
     {
       id: 'translate',
       label: 'Translate',
-      description: 'Translate last message to another language',
+      description: 'Translate last message to Spanish',
       action: async () => {
         await client.send([{ 
           text: 'Translate the last message to Spanish.' 
@@ -111,7 +120,7 @@ export function QuickActions() {
       description: 'Get motivated',
       action: async () => {
         await client.send([{ 
-          text: 'Give me a short motivational message.' 
+          text: 'Give me a motivational message to lift me up when I am feeling down.' 
         }]);
       },
       icon: '💪'
@@ -119,24 +128,13 @@ export function QuickActions() {
     {
       id: 'yoda',
       label: 'Yoda Speak',
-      description: 'Speak like Yoda',
+      description: 'Speak like Yoda we must',
       action: async () => {
         await client.send([{ 
-          text: 'Translate the last message into Yoda speak.' 
+          text: 'From now on, speak like you are Yoda.' 
         }]);
       },
       icon: '🧙'
-    },
-    {
-      id: 'fortune',
-      label: 'Fortune',
-      description: 'Get your fortune',
-      action: async () => {
-        await client.send([{ 
-          text: 'Give me a fortune cookie message.' 
-        }]);
-      },
-      icon: '🥠'
     },
     {
       id: 'quote',
@@ -144,7 +142,7 @@ export function QuickActions() {
       description: 'Get an inspirational quote',
       action: async () => {
         await client.send([{ 
-          text: 'Share a short inspirational quote.' 
+          text: 'Share a powerful inspirational quote.' 
         }]);
       },
       icon: '💭'

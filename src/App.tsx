@@ -22,6 +22,7 @@ import { Altair } from "./components/altair/Altair";
 import ControlTray from "./components/control-tray/ControlTray";
 import cn from "classnames";
 import { RightSidePanel } from "./components/right-side-panel/RightSidePanel";
+import Logger from "./components/logger/Logger";
 
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {

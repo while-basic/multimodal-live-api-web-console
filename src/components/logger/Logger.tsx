@@ -18,7 +18,7 @@ import "./logger.scss";
 
 import { Part } from "@google/generative-ai";
 import cn from "classnames";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { useLoggerStore } from "../../lib/store-logger";
 import {
   ClientContentMessage,
@@ -224,18 +224,40 @@ const component = (log: StreamingLog) => {
 
 export default function Logger({ filter = "none" }: LoggerProps) {
   const { logs } = useLoggerStore();
+  const loggerRef = useRef<HTMLDivElement>(null);
 
-  const filterFn = filters[filter];
+  // Auto-scroll to bottom whenever logs change
+  useEffect(() => {
+    const scrollToBottom = () => {
+      if (loggerRef.current) {
+        const { scrollHeight, clientHeight } = loggerRef.current;
+        loggerRef.current.scrollTop = scrollHeight - clientHeight;
+      }
+    };
+
+    // Immediate scroll
+    scrollToBottom();
+
+    // Delayed scroll to handle dynamic content
+    const timeoutId = setTimeout(scrollToBottom, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [logs]);
+
+  const filteredLogs = logs.filter(filters[filter]);
 
   return (
-    <div className="logger">
-      <ul className="logger-list">
-        {logs.filter(filterFn).map((log, key) => {
-          return (
-            <LogEntry MessageComponent={component(log)} log={log} key={key} />
-          );
-        })}
-      </ul>
+    <div className="logger" ref={loggerRef}>
+      {filteredLogs.map((log, i) => {
+        const MessageComponent = component(log);
+        return (
+          <LogEntry
+            key={i}
+            log={log}
+            MessageComponent={MessageComponent}
+          />
+        );
+      })}
     </div>
   );
 }
