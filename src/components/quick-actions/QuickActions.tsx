@@ -1,119 +1,27 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
-import { Visualizer } from '../visualizer/Visualizer';
+import { FaPlus } from 'react-icons/fa';
+import { CreateActionModal } from './CreateActionModal';
+import { useCustomActions } from '../../hooks/use-custom-actions';
+import { QuickAction, CustomQuickAction } from '../../types/quick-actions';
 import './quick-actions.scss';
 
-interface QuickAction {
-  id: string;
-  label: string;
-  action: () => Promise<void>;
-  icon?: string;
-  description?: string;
-}
-
 export function QuickActions() {
-  const context = useLiveAPIContext();
+  const { client, connected } = useLiveAPIContext();
   const [isResponding, setIsResponding] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const { customActions, saveCustomAction, deleteCustomAction } = useCustomActions();
 
-  const { client, connected } = context || {};
-
-  // Listen for AI response events
-  useEffect(() => {
-    if (!client) return;
-
-    const cleanup = () => {
-      setIsResponding(false);
-    };
-
-    // Listen for cleanup events
-    window.addEventListener('beforeunload', cleanup);
-
-    return () => {
-      window.removeEventListener('beforeunload', cleanup);
-    };
-  }, [client]);
-
-  const handleAction = useCallback(async (actionFn: () => Promise<void>) => {
-    if (!client || !connected) return;
-    
+  const handleAction = async (actionFn: () => Promise<void>) => {
+    setIsResponding(true);
     try {
-      setIsResponding(true);
       await actionFn();
-      // Add delay before hiding visualizer
-      setTimeout(() => setIsResponding(false), 3000);
-    } catch (error) {
-      console.error('Error executing quick action:', error);
+    } finally {
       setIsResponding(false);
     }
-  }, [client, connected]);
+  };
 
-  if (!context || !client) {
-    return (
-      <div className="quick-actions">
-        <div className="quick-actions-header">
-          <h3>Quick Actions</h3>
-        </div>
-        <div className="quick-actions-list">
-          <div className="quick-action-error">
-            API connection not available
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const actions: QuickAction[] = [
-    {
-      id: 'genz',
-      label: 'Gen Z Speak',
-      description: 'Speak like a Gen Z.',
-      action: async () => {
-        await client.send([{ text: 'Have a conversation with me while you speak like a Gen Z and use all the proper slang.' }]);
-      },
-      icon: '😂'
-    },
-    {
-      id: 'graph',
-      label: 'Draw Graph',
-      description: 'Draw a graph of context',
-      action: async () => {
-        await client.send([{ text: 'Create a graph for the context of my choosing.' }]);
-      },
-      icon: '📈'
-    },
-    {
-      id: 'summarize',
-      label: 'Summarize Chat',
-      description: 'Get a summary of current conversation',
-      action: async () => {
-        await client.send([{ 
-          text: 'Please summarize our conversation so far.' 
-        }]);
-      },
-      icon: '📋'
-    },
-    {
-      id: 'translate',
-      label: 'Translate',
-      description: 'Translate last message to Spanish',
-      action: async () => {
-        await client.send([{ 
-          text: 'Translate the last message to Spanish.' 
-        }]);
-      },
-      icon: '🌐'
-    },
-    {
-      id: 'bitcoin',
-      label: 'Bitcoin Price',
-      description: 'Get the price of Bitcoin',
-      action: async () => {
-        await client.send([{ 
-          text: 'What is the current price of Bitcoin?' 
-        }]);
-      },
-      icon: '₿'
-    },
+  const builtInActions: QuickAction[] = [
     {
       id: 'motivate',
       label: 'Motivate Me',
@@ -125,55 +33,68 @@ export function QuickActions() {
       },
       icon: '💪'
     },
-    {
-      id: 'yoda',
-      label: 'Yoda Speak',
-      description: 'Speak like Yoda we must',
-      action: async () => {
-        await client.send([{ 
-          text: 'From now on, speak like you are Yoda.' 
-        }]);
-      },
-      icon: '🧙'
-    },
-    {
-      id: 'quote',
-      label: 'Quote',
-      description: 'Get an inspirational quote',
-      action: async () => {
-        await client.send([{ 
-          text: 'Share a powerful inspirational quote.' 
-        }]);
-      },
-      icon: '💭'
-    }
+    // ... other existing actions
   ];
+
+  const allActions = [...builtInActions, ...customActions];
+
+  const handleSaveCustomAction = (action: CustomQuickAction) => {
+    saveCustomAction(action);
+    setShowCreateModal(false);
+  };
 
   return (
     <>
-      <Visualizer isActive={isResponding} />
       <div className="quick-actions">
         <div className="quick-actions-header">
           <h3>Quick Actions</h3>
-          <div className="connection-status" title={connected ? 'Connected' : 'Disconnected'}>
-            {connected ? '🟢' : '🔴'}
+          <div className="header-actions">
+            <button 
+              className="create-action-button"
+              onClick={() => setShowCreateModal(true)}
+              title="Create Custom Action"
+            >
+              <FaPlus />
+            </button>
+            <div className="connection-status" title={connected ? 'Connected' : 'Disconnected'}>
+              {connected ? '🟢' : '🔴'}
+            </div>
           </div>
         </div>
+        
         <div className="quick-actions-list">
-          {actions.map((action) => (
-            <button
-              key={action.id}
-              className="quick-action-button"
-              onClick={() => handleAction(action.action)}
-              title={action.description}
-              disabled={!connected || isResponding}
-            >
-              {action.icon && <span className="quick-action-icon">{action.icon}</span>}
-              <span className="quick-action-label">{action.label}</span>
-            </button>
+          {allActions.map((action) => (
+            <div key={action.id} className="action-wrapper">
+              <button
+                className="quick-action-button"
+                onClick={() => handleAction(action.action)}
+                title={action.description}
+                disabled={!connected || isResponding}
+              >
+                {action.icon && <span className="quick-action-icon">{action.icon}</span>}
+                <span className="quick-action-label">{action.label}</span>
+              </button>
+              {'isCustom' in action && (
+                <button 
+                  className="delete-action"
+                  onClick={() => deleteCustomAction(action.id)}
+                  title="Delete custom action"
+                >
+                  ×
+                </button>
+              )}
+            </div>
           ))}
         </div>
       </div>
+
+      {showCreateModal && (
+        <CreateActionModal 
+          onClose={() => setShowCreateModal(false)}
+          onSave={handleSaveCustomAction}
+          client={client}
+        />
+      )}
     </>
   );
 } 

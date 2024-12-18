@@ -121,9 +121,9 @@ export default function SidePanel({ onOpenChange }: SidePanelProps) {
         />
         <div className={cn("streaming-indicator", { connected })}>
           {connected ? (
-            <span>🔵{open ? " Streaming" : ""}</span>
+            <span>🟢{open ? " Streaming" : ""}</span>
           ) : (
-            <span>⏸️{open ? " Paused" : ""}</span>
+            <span>🔴{open ? " Paused" : ""}</span>
           )}
         </div>
       </section>

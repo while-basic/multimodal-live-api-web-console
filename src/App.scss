@@ -12,7 +12,7 @@
   --accent-blue: rgb(161, 228, 242);
   --accent-blue-active-bg: #001233;
   --accent-blue-active: #98beff;
-  --accent-blue-headers: #448dff;
+  --accent-blue-headers: #44ddff;
   --accent-green: rgb(168, 218, 181);
 
   --midnight-blue: rgb(0, 18, 51);
@@ -43,7 +43,7 @@
   --Green-500: #0d9c53;
   --Green-700: #025022;
 
-  --Blue-500: #1f94ff;
+  --Blue-500: #1fff93;
   --Blue-800: #0f3557;
 
   --Red-400: #ff9c7a;
@@ -186,7 +186,7 @@ body {
     transition: margin 0.3s ease-in-out;
 
     &.left-open {
-      margin-left: 400px;
+      margin-left: 300px;
     }
 
     &.right-open {
