@@ -39,8 +39,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const { user } = useAuth();
-
   return (
     <Router>
       <AuthProvider>
