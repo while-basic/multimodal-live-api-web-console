@@ -29,7 +29,11 @@ const filterOptions = [
   { value: "none", label: "All" },
 ];
 
-export default function SidePanel() {
+interface SidePanelProps {
+  onOpenChange?: (isOpen: boolean) => void;
+}
+
+export default function SidePanel({ onOpenChange }: SidePanelProps) {
   const { connected, client } = useLiveAPIContext();
   const [open, setOpen] = useState(true);
   const loggerRef = useRef<HTMLDivElement>(null);
@@ -42,6 +46,11 @@ export default function SidePanel() {
     label: string;
   } | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Notify parent of open state changes
+  useEffect(() => {
+    onOpenChange?.(open);
+  }, [open, onOpenChange]);
 
   //scroll the log to the bottom when new logs come in
   useEffect(() => {
@@ -115,15 +124,19 @@ export default function SidePanel() {
           }}
         />
         <div className={cn("streaming-indicator", { connected })}>
-          {connected
-            ? `🔵${open ? " Streaming" : ""}`
-            : `⏸️${open ? " Paused" : ""}`}
+          {connected ? (
+            <span>🔵{open ? " Streaming" : ""}</span>
+          ) : (
+            <span>⏸️{open ? " Paused" : ""}</span>
+          )}
         </div>
       </section>
       <div className="side-panel-container" ref={loggerRef}>
-        <Logger
-          filter={(selectedOption?.value as LoggerFilterType) || "none"}
-        />
+        <div className="logger-section">
+          <Logger
+            filter={(selectedOption?.value as LoggerFilterType) || "none"}
+          />
+        </div>
       </div>
       <div className={cn("input-container", { disabled: !connected })}>
         <div className="input-content">

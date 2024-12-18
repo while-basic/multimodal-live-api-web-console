@@ -1,0 +1,36 @@
+.voice-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  
+  label {
+    color: var(--Neutral-90);
+    font-size: 14px;
+  }
+
+  select {
+    background: var(--Neutral-15);
+    color: var(--Neutral-90);
+    border: 1px solid var(--Neutral-30);
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--Neutral-40);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--Primary-60);
+    }
+
+    option {
+      background: var(--Neutral-15);
+      color: var(--Neutral-90);
+      padding: 4px;
+    }
+  }
+} 

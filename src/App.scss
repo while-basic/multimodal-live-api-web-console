@@ -169,3 +169,55 @@ body {
   border-radius: 32px;
   max-height: fit-content;
 }
+
+.App {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--Neutral-00);
+
+  .streaming-console {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 40px;
+    margin-right: 40px;
+    transition: margin 0.3s ease-in-out;
+
+    &.left-open {
+      margin-left: 400px;
+    }
+
+    &.right-open {
+      margin-right: 300px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+
+      .main-app-area {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .stream {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+
+        &.hidden {
+          display: none;
+        }
+      }
+    }
+  }
+}
