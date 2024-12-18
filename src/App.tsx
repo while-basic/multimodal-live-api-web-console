@@ -14,65 +14,66 @@
  * limitations under the License.
  */
 
-import { useRef, useState } from "react";
-import "./App.scss";
-import { LiveAPIProvider } from "./contexts/LiveAPIContext";
-import SidePanel from "./components/side-panel/SidePanel";
-import { Altair } from "./components/altair/Altair";
-import ControlTray from "./components/control-tray/ControlTray";
-import cn from "classnames";
-import { RightSidePanel } from "./components/right-side-panel/RightSidePanel";
-import Logger from "./components/logger/Logger";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { SignIn } from './components/auth/SignIn';
+import { LandingPage } from './components/LandingPage';
+import { ChatPage } from './components/ChatPage';
+import { DocumentationPage } from './components/pages/DocumentationPage';
+import { SettingsPage } from './components/pages/SettingsPage';
+import './App.scss';
 
-const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
-if (typeof API_KEY !== "string") {
-  throw new Error("set REACT_APP_GEMINI_APIK_KEY in .env");
-}
+// Protected route wrapper
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
 
-const host = "generativelanguage.googleapis.com";
-const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/signin" />;
+  }
+
+  return <>{children}</>;
+};
 
 function App() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
+  const { user } = useAuth();
 
   return (
-    <div className="App">
-      <LiveAPIProvider url={uri} apiKey={API_KEY}>
-        <SidePanel onOpenChange={setLeftSidebarOpen} />
-        <RightSidePanel onOpenChange={setRightSidebarOpen} />
-        <div 
-          className={cn("streaming-console", {
-            'left-open': leftSidebarOpen,
-            'right-open': rightSidebarOpen
-          })}
-        >
-          <main>
-            <div className="main-app-area">
-              <Altair />
-              <video
-                className={cn("stream", {
-                  hidden: !videoRef.current || !videoStream,
-                })}
-                ref={videoRef}
-                autoPlay
-                playsInline
-              />
-            </div>
-
-            <ControlTray
-              videoRef={videoRef}
-              supportsVideo={true}
-              onVideoStreamChange={setVideoStream}
-            >
-              {/* put your own buttons here */}
-            </ControlTray>
-          </main>
-        </div>
-      </LiveAPIProvider>
-    </div>
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route 
+            path="/docs" 
+            element={
+              <ProtectedRoute>
+                <DocumentationPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </AuthProvider>
+    </Router>
   );
 }
 

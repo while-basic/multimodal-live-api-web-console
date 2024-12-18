@@ -33,6 +33,17 @@ export function QuickActions() {
       },
       icon: '💪'
     },
+    {
+        id: 'spanish',
+        label: 'Spanish',
+        description: 'Speak only in Spanish',
+        action: async () => {
+            await client.send([{ 
+                text: 'Speak to me strictly in proper Spanish.' 
+            }]);
+        },
+        icon: '🇪🇸'
+    }
     // ... other existing actions
   ];
 
