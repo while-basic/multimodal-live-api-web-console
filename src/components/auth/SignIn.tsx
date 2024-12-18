@@ -11,7 +11,7 @@ export const SignIn = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate('/chat');
     }
   }, [user, navigate]);
 
@@ -22,7 +22,7 @@ export const SignIn = () => {
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
-          redirectTo={`${window.location.origin}/`}
+          redirectTo={`${window.location.origin}/chat`}
         />
       </div>
     </div>

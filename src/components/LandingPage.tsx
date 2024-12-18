@@ -12,8 +12,8 @@ export const LandingPage = () => {
         
         <div className="cta-buttons">
           {user ? (
-            <Link to="/" className="primary-button">
-              Go to Chat
+            <Link to="/chat" className="primary-button">
+              Go to Sign In
             </Link>
           ) : (
             <>

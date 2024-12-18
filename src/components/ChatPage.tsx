@@ -6,7 +6,8 @@ import ControlTray from "./control-tray/ControlTray";
 import cn from "classnames";
 import { RightSidePanel } from "./right-side-panel/RightSidePanel";
 import { useAuth } from "../contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {
@@ -22,6 +23,12 @@ export function ChatPage() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   return (
     <div className="App">
@@ -33,12 +40,15 @@ export function ChatPage() {
           <h2>Celaya</h2>
         </div>
         <nav className="header-nav">
-          <Link to="/" className="nav-link active">Console</Link>
+          <Link to="/chat" className="nav-link active">Console</Link>
           <Link to="/docs" className="nav-link">Documentation</Link>
           <Link to="/settings" className="nav-link">Settings</Link>
         </nav>
         <div className="header-right">
           <span className="user-email">{user?.email}</span>
+          <button onClick={handleSignOut} className="sign-out-button">
+            Sign Out
+          </button>
         </div>
       </header>
       <LiveAPIProvider url={uri} apiKey={API_KEY}>
